@@ -1,0 +1,22 @@
+# =============================================================================
+# Service: expõe o Deployment php-apache DENTRO do cluster (tipo ClusterIP).
+# -----------------------------------------------------------------------------
+# Funciona como "porta de entrada" estável: o gerador de carga acessa sempre
+# http://php-apache (nome vira DNS interno) e o Service distribui as
+# requisições entre TODAS as réplicas que o HPA criar. Sem o Service, teríamos
+# que acertar o IP de cada Pod individualmente.
+# =============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache            # o nome vira o DNS interno: http://php-apache
+  labels:
+    app: php-apache
+spec:
+  type: ClusterIP             # acessível apenas de dentro do cluster (suficiente p/ o teste)
+  ports:
+    - port: 80                # porta do Service
+      targetPort: 80          # porta do container de destino
+      protocol: TCP
+  selector:
+    app: php-apache           # roteia para os Pods que tiverem este rótulo

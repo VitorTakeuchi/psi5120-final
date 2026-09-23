@@ -1,0 +1,36 @@
+# =============================================================================
+# deployment-saturacao.yaml — Extensão 2: mesma imagem, requests MAIORES.
+# -----------------------------------------------------------------------------
+# Aumentamos o 'requests' de CPU por Pod (de 200m para 500m) para que cada
+# réplica reserve mais CPU. Com 3 nós pequenos, a soma de CPU alocável se esgota
+# com menos réplicas, tornando a saturação (Pods Pending) rápida e clara de
+# demonstrar. É a mesma imagem do trabalho intermediário — muda só o dimensionamento.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+  labels:
+    app: php-apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-apache
+  template:
+    metadata:
+      labels:
+        app: php-apache
+    spec:
+      containers:
+        - name: php-apache
+          image: registry.k8s.io/hpa-example
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 500m        # maior que no intermediário (200m): satura antes
+              memory: 64Mi
+            limits:
+              cpu: 800m
+              memory: 128Mi

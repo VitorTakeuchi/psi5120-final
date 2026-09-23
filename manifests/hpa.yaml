@@ -1,0 +1,35 @@
+# =============================================================================
+# HorizontalPodAutoscaler (HPA) — o coração deste trabalho.
+# -----------------------------------------------------------------------------
+# Ajusta AUTOMATICAMENTE o número de réplicas do Deployment php-apache com base
+# na utilização média de CPU. Usa a API autoscaling/v2 (atual; a v1 era só CPU
+# e mais limitada). Requer o Metrics Server instalado no cluster para coletar
+# as métricas — sem ele, a coluna TARGETS aparece como <unknown>.
+# =============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:              # QUAL objeto será escalado
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1               # piso: nunca menos que 1 réplica
+  maxReplicas: 10              # teto: no máximo 10 réplicas
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50   # ALVO: manter a CPU média em 50% do 'requests'
+                                   # (ou seja, ~100m por Pod, já que requests=200m)
+  # 'behavior' (opcional) controla a VELOCIDADE de subida/descida das réplicas.
+  # Deixa o experimento mais didático: sobe rápido, desce devagar.
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0     # reage imediatamente ao aumento de carga
+    scaleDown:
+      stabilizationWindowSeconds: 300   # espera 5 min estável antes de reduzir
+                                        # (evita "flapping" — subir/descer sem parar)

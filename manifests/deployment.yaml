@@ -1,0 +1,44 @@
+# =============================================================================
+# Deployment: servidor web (php-apache) — ALVO do autoescalamento (HPA)
+# -----------------------------------------------------------------------------
+# Usamos a imagem oficial do exemplo de HPA do Kubernetes
+# (registry.k8s.io/hpa-example): um Apache + PHP cuja página raiz executa um
+# laço matemático pesado. Isso é PROPOSITAL — precisamos de uma carga que
+# "esquente" a CPU para o HPA reagir e criar réplicas. É a mesma imagem da
+# Referência 1 (HPA Walkthrough), o que facilita reproduzir o experimento.
+#
+# Quer trocar por NGINX? Dá, mas o NGINX servindo página estática quase não
+# consome CPU, então o HPA por CPU não dispararia. Ficaríamos com a imagem
+# php-apache justamente por ela gerar carga de CPU sob demanda.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache              # nome do Deployment (referenciado pelo Service e pelo HPA)
+  labels:
+    app: php-apache
+spec:
+  replicas: 1                   # começamos com 1 réplica; o HPA cuidará de escalar
+  selector:
+    matchLabels:
+      app: php-apache           # seleciona os Pods gerenciados por este Deployment
+  template:
+    metadata:
+      labels:
+        app: php-apache         # rótulo dos Pods (precisa casar com o selector acima)
+    spec:
+      containers:
+        - name: php-apache
+          image: registry.k8s.io/hpa-example   # imagem que gera carga de CPU
+          ports:
+            - containerPort: 80                 # Apache escuta na porta 80
+          resources:
+            # 'requests' é OBRIGATÓRIO para o HPA por CPU funcionar:
+            # a utilização é calculada como (uso_atual / requests) * 100%.
+            requests:
+              cpu: 200m          # 0,2 vCPU reservada por Pod
+              memory: 64Mi
+            # 'limits' impede que um Pod monopolize o nó.
+            limits:
+              cpu: 500m          # teto de 0,5 vCPU por Pod
+              memory: 128Mi

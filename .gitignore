@@ -1,0 +1,17 @@
+# ambiente virtual Python
+.venv/
+__pycache__/
+*.pyc
+
+# kubeconfig / credenciais
+*.kubeconfig
+.env
+
+# temporários do LaTeX
+*.aux
+*.log
+*.out
+*.synctex.gz
+
+# resultados brutos volumosos (mantenha os agregados/gráficos)
+resultados/ext1/trial-*.csv

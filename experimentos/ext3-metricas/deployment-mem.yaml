@@ -1,0 +1,38 @@
+# =============================================================================
+# deployment-mem.yaml — Extensão 3: aplicação que consome MEMÓRIA sob demanda.
+# -----------------------------------------------------------------------------
+# Usa a imagem 'polinux/stress', que permite alocar memória com o comando
+# 'stress'. Cada réplica reserva 'requests.memory', base sobre a qual o HPA por
+# memória calcula a utilização percentual. A carga de memória é gerada dentro do
+# próprio container no arranque (ajuste --vm-bytes conforme desejar demonstrar).
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mem-app
+  labels:
+    app: mem-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mem-app
+  template:
+    metadata:
+      labels:
+        app: mem-app
+    spec:
+      containers:
+        - name: mem-app
+          image: polinux/stress
+          # Aloca ~120Mi por réplica e mantém, elevando a utilização de memória
+          # acima do alvo de 60% dos 150Mi solicitados -> aciona o HPA.
+          command: ["stress"]
+          args: ["--vm", "1", "--vm-bytes", "120M", "--vm-hang", "0"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 150Mi      # base do cálculo do HPA por memória
+            limits:
+              cpu: 100m
+              memory: 200Mi

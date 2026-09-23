@@ -1,0 +1,28 @@
+# =============================================================================
+# hpa-memoria.yaml — Extensão 3: HPA baseado em MEMÓRIA (não em CPU).
+# -----------------------------------------------------------------------------
+# O trabalho intermediário usou apenas utilização de CPU e apontou que essa
+# métrica pode não refletir integralmente a demanda de uma aplicação. Aqui
+# demonstramos o autoescalamento por outra métrica de recurso — memória —
+# usando a mesma API autoscaling/v2, sem componentes adicionais.
+#
+# Para acionar, é preciso uma carga que consuma MEMÓRIA (ver roteiro-ext3.md).
+# =============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mem-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mem-app
+  minReplicas: 1
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: memory                 # <-- métrica de MEMÓRIA (em vez de cpu)
+        target:
+          type: Utilization
+          averageUtilization: 60      # alvo: 60% do 'requests' de memória

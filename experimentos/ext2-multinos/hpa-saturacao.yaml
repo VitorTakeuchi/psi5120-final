@@ -1,0 +1,29 @@
+# =============================================================================
+# hpa-saturacao.yaml — Extensão 2: HPA configurado para PROVOCAR SATURAÇÃO.
+# -----------------------------------------------------------------------------
+# Diferença em relação ao HPA do trabalho intermediário:
+#   - maxReplicas elevado (30) para que a demanda por réplicas ultrapasse a
+#     capacidade agregada do cluster de 3 nós pequenos.
+# Combinado com o deployment-saturacao.yaml (requests de CPU maiores), isso faz
+# com que, a partir de certo ponto, novos Pods não encontrem nó com CPU
+# alocável e fiquem no estado Pending — exatamente o cenário que o trabalho
+# intermediário afirmou não ter avaliado.
+# =============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1
+  maxReplicas: 30          # alto de propósito: excede a capacidade do cluster
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
