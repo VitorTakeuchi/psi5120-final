@@ -15,10 +15,6 @@ ataca **uma limitação declarada** no artigo intermediário, e todas rodam em
 | Evidências (figuras) | `artigo/figuras/` | ✅ |
 | Submissão no Moodle (PDF) | — | ⬜ |
 
-
-Artigo final: **inglês, formato IEEE, 6–18 páginas**. Prazo: **13/09/2026**.
-Autoria individual: Vitor Augusto Takeuchi (NUSP 11327606).
-
 ## Ligação com as limitações do trabalho intermediário
 
 | Limitação declarada no TA1 | Extensão que a cobre |
