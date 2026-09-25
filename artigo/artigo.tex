@@ -105,14 +105,16 @@ This paper takes those three limitations as its agenda. Each is addressed by a
 dedicated experiment, and --- following the restriction of avoiding further cloud
 cost --- all new experiments run on Minikube. The managed-cloud results from the
 prior work are reused as an already-measured baseline. All code, manifests, and
-evidence are publicly available at
-\url{https://github.com/VitorTakeuchi/psi5120-hpa}.
+evidence for the extensions are publicly available at
+\url{https://github.com/VitorTakeuchi/psi5120-final}, and the baseline (prior
+work) at \url{https://github.com/VitorTakeuchi/psi5120-hpa}.
 
 The remainder of the paper is organized as follows. Section~\ref{sec:bg} reviews
 the background; Section~\ref{sec:rel} discusses related work;
 Section~\ref{sec:baseline} summarizes the baseline (the intermediate study);
 Sections~\ref{sec:ext1}, \ref{sec:ext2} and~\ref{sec:ext3} present the three
-extensions; Section~\ref{sec:disc} discusses the combined findings; and
+extensions; Section~\ref{sec:disc} discusses the combined findings;
+Section~\ref{sec:threats} examines threats to validity; and
 Section~\ref{sec:conc} concludes.
 
 %==============================================================================
@@ -312,14 +314,14 @@ with the mean (solid) and the $\pm 1$ standard-deviation band (shaded). The band
 is widest during the scale-up transient, which is precisely where the reaction
 time varies most.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=\columnwidth]{figuras/ext1_replicas_media_desvio.png}
+\includegraphics[width=0.72\textwidth]{figuras/ext1_replicas_media_desvio.png}
 \caption{Extension 1: replicas over time across ten trials (grey), with mean and
 $\pm 1$ standard-deviation band. The variability is concentrated in the scale-up
 transient.}
 \label{fig:ext1}
-\end{figure}
+\end{figure*}
 
 \subsection{Interpretation}
 This result directly qualifies the baseline. The single-run baseline reported
@@ -461,21 +463,21 @@ about 120\,Mi and reports essentially 0\,m of CPU. Because the \texttt{stress}
 workload never releases the memory it allocates, adding replicas does not dilute
 the per-replica average as happens with CPU.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=\columnwidth]{figuras/ext3_hpa_memoria.png}
+\includegraphics[width=\textwidth]{figuras/ext3_hpa_memoria.png}
 \caption{Extension 3: HPA driven by memory (\texttt{memory: 80\%/60\%}); the
 replica count grows from 1 to 4.}
 \label{fig:ext3-hpa}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=\columnwidth]{figuras/ext3_top_pods.png}
+\includegraphics[width=\textwidth]{figuras/ext3_top_pods.png}
 \caption{Extension 3: per-Pod usage (\texttt{kubectl top pods}); about 120\,Mi of
 memory each and near-zero CPU.}
 \label{fig:ext3-top}
-\end{figure}
+\end{figure*}
 
 \subsection{Interpretation}
 Two points follow. First, the same mechanism scales on a different signal with no
